@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "author": "corexy-test",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0 },
+
+    { "type": "wokwi-a4988", "id": "driverA", "top": 120, "left": 120 },
+    { "type": "wokwi-stepper-motor", "id": "motorA", "top": 120, "left": 320 },
+
+    { "type": "wokwi-a4988", "id": "driverB", "top": 280, "left": 120 },
+    { "type": "wokwi-stepper-motor", "id": "motorB", "top": 280, "left": 320 }
+  ],
+
+  "connections": [
+
+    ["esp:3V3","driverA:VDD","red"],
+    ["esp:GND","driverA:GND","black"],
+
+    ["esp:3V3","driverB:VDD","red"],
+    ["esp:GND","driverB:GND","black"],
+
+    ["esp:26","driverA:STEP","green"],
+    ["esp:27","driverA:DIR","blue"],
+
+    ["esp:14","driverB:STEP","green"],
+    ["esp:12","driverB:DIR","blue"],
+
+    ["driverA:RESET","driverA:SLEEP","yellow"],
+    ["driverA:RESET","driverA:VDD","yellow"],
+
+    ["driverB:RESET","driverB:SLEEP","yellow"],
+    ["driverB:RESET","driverB:VDD","yellow"],
+
+    ["driverA:MS1","driverA:GND","black"],
+    ["driverA:MS2","driverA:GND","black"],
+    ["driverA:MS3","driverA:GND","black"],
+
+    ["driverB:MS1","driverB:GND","black"],
+    ["driverB:MS2","driverB:GND","black"],
+    ["driverB:MS3","driverB:GND","black"],
+
+    ["driverA:1A","motorA:A+","orange"],
+    ["driverA:1B","motorA:A-","orange"],
+    ["driverA:2A","motorA:B+","purple"],
+    ["driverA:2B","motorA:B-","purple"],
+
+    ["driverB:1A","motorB:A+","orange"],
+    ["driverB:1B","motorB:A-","orange"],
+    ["driverB:2A","motorB:B+","purple"],
+    ["driverB:2B","motorB:B-","purple"]
+  ]
+}

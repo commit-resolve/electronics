@@ -34,7 +34,7 @@ void coreXYMove(int x, int y) {
 
     if (i < abs(stepsA)) {
       digitalWrite(STEP_A, HIGH);
-      digitalWrite(STEP_A, HIGH);
+      digitalWrite(STEP_A, LOW);
     }
 
     if (i < abs(stepsB)) {

@@ -9,7 +9,10 @@
     { "type": "wokwi-stepper-motor", "id": "motorA", "top": 120, "left": 320 },
 
     { "type": "wokwi-a4988", "id": "driverB", "top": 280, "left": 120 },
-    { "type": "wokwi-stepper-motor", "id": "motorB", "top": 280, "left": 320 }
+    { "type": "wokwi-stepper-motor", "id": "motorB", "top": 280, "left": 320 },
+
+    { "type": "wokwi-led", "id": "magnet_led", "top": -120, "left": 260, "attrs": { "color": "blue" }},
+    { "type": "wokwi-resistor", "id": "magnet_res", "top": -80, "left": 260, "attrs": { "value": "220" }}
   ],
 
   "connections": [
@@ -48,6 +51,10 @@
     ["driverB:1A","motorB:A+","orange"],
     ["driverB:1B","motorB:A-","orange"],
     ["driverB:2A","motorB:B+","purple"],
-    ["driverB:2B","motorB:B-","purple"]
+    ["driverB:2B","motorB:B-","purple"],
+
+    ["esp:25","magnet_res:1","green"],
+    ["magnet_res:2","magnet_led:A","green"],
+    ["magnet_led:C","esp:GND","black"]
   ]
 }

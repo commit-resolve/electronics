@@ -6,6 +6,8 @@
 #define STEP_B 14
 #define DIR_B 12
 
+#define MAGNET_PIN 25
+
 int squareSizeMM = 35;
 // steps/mm = 200/(40T*4mm) - 40T*4mm -> pulley specs
 float stepsPerMM = 1.25;
@@ -70,6 +72,8 @@ void setup() {
 
   pinMode(STEP_B, OUTPUT);
   pinMode(DIR_B, OUTPUT);
+
+  pinMode(MAGNET_PIN, OUTPUT);
 }
 
 void moveChess(int x1, int y1, int x2, int y2) {
@@ -114,6 +118,20 @@ void moveChess(int x1, int y1, int x2, int y2) {
   coreXYMove(motorA, motorB);
 }
 
+void pickPiece() {
+
+  digitalWrite(MAGNET_PIN, HIGH); // magnet ON
+  delay(500);
+
+}
+
+void dropPiece() {
+
+  digitalWrite(MAGNET_PIN, LOW); // magnet OFF
+  delay(500);
+
+}
+
 void loop() {
 
   // move right
@@ -128,10 +146,12 @@ void loop() {
   moveChess(0,0,5,2); 
   delay(5000);
   //Charge the electromagnet
+  pickPiece();
   //Move electromagnet from initial sqaure to final square
   moveChess(5,2,6,0);
   delay(5000);
   //discharge the electromagnet
+  dropPiece();
   //Move electromagnet from final square to 00 (A1)
   moveChess(6,0,0,0);
   delay(5000);

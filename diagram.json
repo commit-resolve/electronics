@@ -56,5 +56,8 @@
     ["esp:25","magnet_res:1","green"],
     ["magnet_res:2","magnet_led:A","green"],
     ["magnet_led:C","esp:GND","black"]
-  ]
+  ],
+  "serial": {
+    "port": 9010
+  }
 }

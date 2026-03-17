@@ -8,6 +8,11 @@
 
 #define MAGNET_PIN 25
 
+bool commandReady = false;
+String inputString = "";
+bool stringComplete = false;
+int c1, c2, c3, c4;
+
 int squareSizeMM = 35;
 // steps/mm = 200/(40T*4mm) - 40T*4mm -> pulley specs
 float stepsPerMM = 1.25;
@@ -66,7 +71,11 @@ void coreXYMove(int x, int y) {
 }
 
 void setup() {
-
+  Serial.begin(115200);
+  inputString.reserve(50);
+  delay(1000);
+  Serial.println("ESP32 started");
+  delay(1000);
   pinMode(STEP_A, OUTPUT);
   pinMode(DIR_A, OUTPUT);
 
@@ -109,18 +118,19 @@ void moveChess(int x1, int y1, int x2, int y2) {
   int dx = x2 - x1;
   int dy = y2 - y1;
 
-  int moveX = dx * squareSizeMM * stepsPerMM;
-  int moveY = dy * squareSizeMM * stepsPerMM;
+int moveX = round(dx * squareSizeMM * stepsPerMM);
+int moveY = round(dy * squareSizeMM * stepsPerMM);
 
   int motorA = moveX + moveY;
   int motorB = moveX - moveY;
 
-  coreXYMove(motorA, motorB);
+  coreXYMove(moveX, moveY);
 }
 
 void pickPiece() {
 
   digitalWrite(MAGNET_PIN, HIGH); // magnet ON
+  Serial.println("Electromagnet picked the piece");
   delay(500);
 
 }
@@ -128,32 +138,99 @@ void pickPiece() {
 void dropPiece() {
 
   digitalWrite(MAGNET_PIN, LOW); // magnet OFF
+  Serial.println("Electromagnet dropped the piece");
   delay(500);
 
 }
 
+// void myloop() {
+  
+//   // move right
+//   // coreXYMove(200,0);
+//   // delay(2000);
+
+//   // // move forward
+//   // coreXYMove(0,200);
+//   // delay(2000);
+
+//   //Move electromagnet from 00 (A1) to Initial square
+//   while (Serial.available()) {
+//         char c = Serial.read();
+
+//         if (c == '\n') {
+//             if (inputString.startsWith("MOVE")) {
+        
+
+//         sscanf(inputString.c_str(), "MOVE %d %d %d %d", &c1, &c2, &c3, &c4);
+
+//         Serial.println("Parsed values:");
+//         Serial.printf("From (%d, %d) to (%d, %d)\n", c1, c2, c3, c4);
+
+//         // TODO: call motion function
+//         // executeMove(x1, y1, x2, y2);
+//     }
+//             //inputString = "";  // reset buffer
+//         } else {
+//             inputString += c;
+//         }
+//     }
+  
+//   //moveChess(0,0,5,2); 
+//   moveChess(0,0,c1,c2);
+//   Serial.println("Moved the carrier from A1 to F3");
+//   Serial.println("|");
+//   Serial.println("\\/");
+//   delay(5000);
+//   //Charge the electromagnet
+//   pickPiece();
+//   //Move electromagnet from initial sqaure to final square
+//   //moveChess(5,2,6,0);
+//   moveChess(c1, c2, c3, c4);
+//   Serial.println("Moved the carrier from F3 to G1");
+//   Serial.println("|");
+//   Serial.println("\\/");
+//   delay(5000);
+//   //discharge the electromagnet
+//   dropPiece();
+//   //Move electromagnet from final square to 00 (A1)
+//   //moveChess(6,0,0,0);
+//   moveChess(c3,c4,0,0);
+//   Serial.println("Moved the carrier from G1 to A1");
+//   delay(5000);
+//   inputString = "";
+// }
+
+void executeMove(int x1, int y1, int x2, int y2) {
+
+    moveChess(0,0,x1,y1);
+    pickPiece();
+
+    moveChess(x1,y1,x2,y2);
+    dropPiece();
+
+    moveChess(x2,y2,0,0);
+
+    Serial.println("OK");
+}
+
 void loop() {
+  while (Serial.available()) {
+        char c = Serial.read();
 
-  // move right
-  // coreXYMove(200,0);
-  // delay(2000);
+        if (c == '\n') {
+            if (inputString.startsWith("MOVE")) {
+                sscanf(inputString.c_str(), "MOVE %d %d %d %d", &c1, &c2, &c3, &c4);
+                commandReady = true;
+            }
+            inputString = "";
+        } else {
+            inputString += c;
+        }
+    }
 
-  // // move forward
-  // coreXYMove(0,200);
-  // delay(2000);
+    if (commandReady) {
+        executeMove(c1, c2, c3, c4);
+        commandReady = false;
 
-  //Move electromagnet from 00 (A1) to Initial square
-  moveChess(0,0,5,2); 
-  delay(5000);
-  //Charge the electromagnet
-  pickPiece();
-  //Move electromagnet from initial sqaure to final square
-  moveChess(5,2,6,0);
-  delay(5000);
-  //discharge the electromagnet
-  dropPiece();
-  //Move electromagnet from final square to 00 (A1)
-  moveChess(6,0,0,0);
-  delay(5000);
-
+}
 }

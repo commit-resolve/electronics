@@ -8,7 +8,7 @@
 
 #define MAGNET_PIN 25
 
-bool commandReady = true;
+bool commandReady = false;
 String inputString = "";
 bool stringComplete = false;
 int c1, c2, c3, c4;

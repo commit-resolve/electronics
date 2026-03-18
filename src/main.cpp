@@ -8,7 +8,7 @@
 
 #define MAGNET_PIN 25
 
-bool commandReady = false;
+bool commandReady = true;
 String inputString = "";
 bool stringComplete = false;
 int c1, c2, c3, c4;
@@ -61,12 +61,12 @@ void coreXYMove(int x, int y) {
       digitalWrite(STEP_B, HIGH);
     }
 
-    delayMicroseconds(3);   // pulse width
+    delayMicroseconds(1000);   // pulse width
 
     digitalWrite(STEP_A, LOW);
     digitalWrite(STEP_B, LOW);
 
-    delayMicroseconds(800);
+    delayMicroseconds(2000);
   }
 }
 
@@ -118,11 +118,11 @@ void moveChess(int x1, int y1, int x2, int y2) {
   int dx = x2 - x1;
   int dy = y2 - y1;
 
-int moveX = round(dx * squareSizeMM * stepsPerMM);
-int moveY = round(dy * squareSizeMM * stepsPerMM);
+  int moveX = round(dx * squareSizeMM * stepsPerMM);
+  int moveY = round(dy * squareSizeMM * stepsPerMM);
 
   int motorA = moveX + moveY;
-  int motorB = moveX - moveY;
+  int motorB = moveX - moveY; 
 
   coreXYMove(moveX, moveY);
 }
@@ -131,7 +131,7 @@ void pickPiece() {
 
   digitalWrite(MAGNET_PIN, HIGH); // magnet ON
   Serial.println("Electromagnet picked the piece");
-  delay(500);
+  delay(2000);
 
 }
 
@@ -139,66 +139,9 @@ void dropPiece() {
 
   digitalWrite(MAGNET_PIN, LOW); // magnet OFF
   Serial.println("Electromagnet dropped the piece");
-  delay(500);
+  delay(2000);
 
 }
-
-// void myloop() {
-  
-//   // move right
-//   // coreXYMove(200,0);
-//   // delay(2000);
-
-//   // // move forward
-//   // coreXYMove(0,200);
-//   // delay(2000);
-
-//   //Move electromagnet from 00 (A1) to Initial square
-//   while (Serial.available()) {
-//         char c = Serial.read();
-
-//         if (c == '\n') {
-//             if (inputString.startsWith("MOVE")) {
-        
-
-//         sscanf(inputString.c_str(), "MOVE %d %d %d %d", &c1, &c2, &c3, &c4);
-
-//         Serial.println("Parsed values:");
-//         Serial.printf("From (%d, %d) to (%d, %d)\n", c1, c2, c3, c4);
-
-//         // TODO: call motion function
-//         // executeMove(x1, y1, x2, y2);
-//     }
-//             //inputString = "";  // reset buffer
-//         } else {
-//             inputString += c;
-//         }
-//     }
-  
-//   //moveChess(0,0,5,2); 
-//   moveChess(0,0,c1,c2);
-//   Serial.println("Moved the carrier from A1 to F3");
-//   Serial.println("|");
-//   Serial.println("\\/");
-//   delay(5000);
-//   //Charge the electromagnet
-//   pickPiece();
-//   //Move electromagnet from initial sqaure to final square
-//   //moveChess(5,2,6,0);
-//   moveChess(c1, c2, c3, c4);
-//   Serial.println("Moved the carrier from F3 to G1");
-//   Serial.println("|");
-//   Serial.println("\\/");
-//   delay(5000);
-//   //discharge the electromagnet
-//   dropPiece();
-//   //Move electromagnet from final square to 00 (A1)
-//   //moveChess(6,0,0,0);
-//   moveChess(c3,c4,0,0);
-//   Serial.println("Moved the carrier from G1 to A1");
-//   delay(5000);
-//   inputString = "";
-// }
 
 void executeMove(int x1, int y1, int x2, int y2) {
 
@@ -230,6 +173,7 @@ void loop() {
 
     if (commandReady) {
         executeMove(c1, c2, c3, c4);
+        //executeMove(4,1,4,3);
         commandReady = false;
 
 }

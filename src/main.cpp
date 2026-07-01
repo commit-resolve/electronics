@@ -1,3 +1,31 @@
+// ============================================================
+//  Chess board — ESP32 main.cpp
+//  Reed switch 8x8 matrix scanner + move detector
+//
+//  Wiring summary
+//  --------------
+//  Row pins (OUTPUT): pull LOW one at a time to activate rank
+//    GPIO13 = rank 1 (R0)    GPIO12 = rank 2 (R1)
+//    GPIO14 = rank 3 (R2)    GPIO27 = rank 4 (R3)
+//    GPIO26 = rank 5 (R4)    GPIO25 = rank 6 (R5)
+//    GPIO33 = rank 7 (R6)    GPIO32 = rank 8 (R7)
+//
+//  Col pins (INPUT_PULLUP): read LOW when piece is present
+//    GPIO34 = file a (C0)    GPIO35 = file b (C1)
+//    GPIO36 = file c (C2)    GPIO39 = file d (C3)
+//    GPIO4  = file e (C4)    GPIO5  = file f (C5)
+//    GPIO18 = file g (C6)    GPIO19 = file h (C7)
+//
+//  Serial output to Raspberry Pi: 9600 baud, USB
+//    ESP32 sends:  "e2e4\n"   (player move)
+//    ESP32 reads:  "MOVE x1,y1,x2,y2\n"  (Stockfish reply coords)
+//
+//  Bit index layout in uint64_t
+//    bit = (rank-1)*8 + file_index
+//    e.g.  a1=0  h1=7  a2=8  e2=12  e4=28  h8=63
+// ============================================================
+ 
+
 #include <Arduino.h>
 
 #define STEP_A 26
@@ -156,25 +184,59 @@ void executeMove(int x1, int y1, int x2, int y2) {
     Serial.println("OK");
 }
 
-void loop() {
-  while (Serial.available()) {
-        char c = Serial.read();
+// void loop() {
+//   // while (Serial.available()) {
+//   //       char c = Serial.read();
 
-        if (c == '\n') {
-            if (inputString.startsWith("MOVE")) {
-                sscanf(inputString.c_str(), "MOVE %d %d %d %d", &c1, &c2, &c3, &c4);
-                commandReady = true;
-            }
-            inputString = "";
-        } else {
-            inputString += c;
-        }
+//   //       if (c == '\n') {
+//   //           if (inputString.startsWith("MOVE")) {
+//   //               sscanf(inputString.c_str(), "MOVE %d %d %d %d", &c1, &c2, &c3, &c4);
+//   //               commandReady = true;
+//   //           }
+//   //           inputString = "";
+//   //       } else {
+//   //           inputString += c;
+//   //       }
+//   //   }
+//   // After player move is detected (reed switches/hall sensors)
+//     Serial.println("e2e4");   // Send player move to Python
+    
+//     // Wait for Python's response
+//     while (!Serial.available());
+//     String aiMove = Serial.readStringUntil('\n');  // e.g. "D7D5"
+//     // Parse aiMove and drive steppers
+  
+//     if (commandReady) {
+//         executeMove(c1, c2, c3, c4);
+//         //executeMove(4,1,4,3);
+//         commandReady = false;
+
+// }
+// }
+void loop() {
+  // stockfish best move= e2e4
+  if (Serial.available()) {
+    String input = Serial.readStringUntil('\n');
+    input.trim();
+
+    if (input.length() == 0) return;
+
+    // Parse space-separated integers "c1 c2 c3 c4"
+    int coords[4];
+    int idx = 0;
+    char buf[32];
+    input.toCharArray(buf, sizeof(buf));
+    char* token = strtok(buf, " ");
+
+    while (token != NULL && idx < 4) {
+      coords[idx++] = atoi(token);
+      token = strtok(NULL, " ");
     }
 
-    if (commandReady) {
-        executeMove(c1, c2, c3, c4);
-        //executeMove(4,1,4,3);
-        commandReady = false;
-
-}
+    if (idx == 4) {
+      executeMove(coords[0], coords[1], coords[2], coords[3]);
+    } else {
+      Serial.println("ERROR: Expected 4 integers");
+    }
+  }
 }

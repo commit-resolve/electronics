@@ -260,6 +260,8 @@ void handleSerialInput() {
             sscanf(coords.c_str(), "%d,%d,%d,%d", &x1, &y1, &x2, &y2);
  
             executeMove(x1, y1, x2, y2);
+            delay(500);
+            stableState = stableScan();
         }
         //RESET — a recovery command. Resets prevState, stableState, and srcSquare back to the starting position. Useful if the board gets out of sync with the software state (e.g. pieces were moved while powered off). Replies "RESET_OK" so the Pi knows it landed.
         if (line == "RESET") {

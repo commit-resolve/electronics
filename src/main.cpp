@@ -41,7 +41,7 @@
 //  Wiring summary
 //  --------------
 //  Row pins (OUTPUT): pull LOW one at a time to activate rank
-//    GPIO13 = rank 1 (R0)    GPIO12 = rank 2 (R1)
+//    GPIO13 = rank 1 (R0)    GPIO23 = rank 2 (R1)
 //    GPIO14 = rank 3 (R2)    GPIO27 = rank 4 (R3)
 //    GPIO26 = rank 5 (R4)    GPIO25 = rank 6 (R5)
 //    GPIO33 = rank 7 (R6)    GPIO32 = rank 8 (R7)
@@ -68,7 +68,7 @@
 
 // ── Pin definitions ──────────────────────────────────────────
  
-const int ROW_PINS[8] = {13, 12, 14, 27, 26, 25, 33, 32};
+const int ROW_PINS[8] = {13, 23, 14, 27, 26, 25, 33, 32};
 // rank 1..8 mapped to R0..R7
  
 const int COL_PINS[8] = {34, 35, 36, 39, 4, 5, 18, 19};
